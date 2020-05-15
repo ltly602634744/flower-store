@@ -3,8 +3,10 @@
 //import flower.rest.server.dao.VendorRepository;
 //import flower.rest.server.entity.Vendor;
 //import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.validation.BindingResult;
 //import org.springframework.web.bind.annotation.*;
 //
+//import javax.validation.Valid;
 //import java.util.List;
 //import java.util.Optional;
 //
@@ -37,7 +39,12 @@
 //
 //
 //    @PostMapping("/vendors")
-//    public Vendor addVendor(@RequestBody Vendor theVendor){
+//    public Vendor addVendor(@Valid @RequestBody Vendor theVendor,
+//                            BindingResult bindingResult){
+//
+////        if(bindingResult.hasErrors()){
+////            System.out.println(bindingResult.getAllErrors());
+////        }
 //
 //        theVendor.setId(0);
 //
