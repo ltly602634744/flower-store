@@ -12,13 +12,13 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employee_id")
-    private int employee_id;
+    private int employeeId;
 
     @Column(name = "employee_name")
-    private String employee_name;
+    private String employeeName;
 
     @Column(name = "employee_telephone")
-    private int employee_telephone;
+    private int employeeTelephone;
 
 
 }

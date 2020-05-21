@@ -17,16 +17,16 @@ public class Vendor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "vendor_id")
-    private int vendor_id;
+    private int vendorId;
 
     @Column(name = "vendor_name")
-    private String vendor_name;
+    private String vendorName;
 
     @Column(name = "vendor_contact")
-    private String vendor_contact;
+    private String vendorContact;
 
     @Column(name = "vendor_telephone")
-    private String vendor_telephone;
+    private String vendorTelephone;
 
 //    @ManyToMany(fetch = FetchType.LAZY, cascade = {
 //            CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH

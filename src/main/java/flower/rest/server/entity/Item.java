@@ -14,10 +14,10 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
-    private int item_id;
+    private int itemId;
 
     @Column(name = "item_name")
-    private String item_name;
+    private String itemName;
 
 //    @ManyToMany(fetch = FetchType.LAZY, cascade = {
 //            CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
@@ -29,11 +29,13 @@ public class Item {
 //    )
 //    private List<Vendor> vendors;
 
-    @Column(name = "item_price_id")
-    private int item_price_id;
+    @OneToOne(mappedBy = "priceItem", cascade = {
+            CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
+    })
+    private Price price;
 
     @Column(name = "item_location")
-    private String location;
+    private String itemLocation;
 
 //    public void addVendor(Vendor vendor){
 //        if(this.vendors == null){

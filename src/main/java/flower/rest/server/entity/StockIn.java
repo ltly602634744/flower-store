@@ -17,33 +17,33 @@ public class StockIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stock_in_id")
-    private int stock_in_id;
+    private int stockInId;
 
     @Column(name = "stock_in_time")
-    private LocalDateTime stock_in_time;
+    private LocalDateTime stockInTime;
 
     @Column(name = "stock_in_quantity")
-    private int stock_in_quantity;
+    private int stockInQuantity;
 
     @Column(name = "stock_in_price")
-    private double stock_in_price;
+    private double stockInPrice;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
     })
     @JoinColumn(name = "stock_in_employee_id")//foreign key
-    private Employee stock_in_employee;
+    private Employee stockInEmployee;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
     })
     @JoinColumn(name = "stock_in_item_id")//foreign key
-    private Item stock_in_item;
+    private Item stockInItem;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
     })
     @JoinColumn(name = "stock_in_vendor_id")//foreign key
-    private Vendor stock_in_vendor;
+    private Vendor stockInVendor;
 
 }
