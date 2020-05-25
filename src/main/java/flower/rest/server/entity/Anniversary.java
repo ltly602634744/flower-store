@@ -13,14 +13,24 @@ public class Anniversary {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "anniversary_id")
-    private int membershipId;
+    private int anniversaryId;
 
     @Column(name = "anniversary_name")
-    private String membershipName;
+    private String anniversaryName;
 
     @Column(name = "anniversary_date")
-    private LocalDate membershipDate;
+    private LocalDate anniversaryDate;
 
     @Column(name = "anniversary_prefer")
     private String anniversaryPrefer;
+
+//    @ManyToOne(cascade = {
+//            CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH
+//    })
+//    @JoinColumn(name = "anniversary_membership_id")//foreign key
+//    private Membership membership;
+
+    @Column(name = "anniversary_membership_id")
+    private int anniversaryMembershipId;
+
 }

@@ -20,5 +20,8 @@ public class Employee {
     @Column(name = "employee_telephone")
     private int employeeTelephone;
 
+    @Column(name = "employee_status")
+    private boolean employeeStatus;
+
 
 }

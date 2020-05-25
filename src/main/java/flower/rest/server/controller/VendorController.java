@@ -7,12 +7,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/api")
+@RequestMapping("/api/vendors1")
 public class VendorController {
 
     private VendorRepository vendorRepository;
@@ -22,12 +25,12 @@ public class VendorController {
         this.vendorRepository = vendorRepository;
     }
 
-    @GetMapping("/vendors1")
+    @GetMapping()
     public List<Vendor> findAll(){
         return this.vendorRepository.findAll();
     }
 
-    @GetMapping("/vendors1/{vendorId}")
+    @GetMapping("/{vendorId}")
     public Vendor findById(@PathVariable int vendorId){
         Optional<Vendor> result = this.vendorRepository.findById(vendorId);
         if(result.isPresent()){
@@ -37,15 +40,23 @@ public class VendorController {
         }
     }
 
+    @GetMapping("/fuzzySearch")
+    public List<Vendor> fuzzySearch(@RequestParam("content") String content){
+        return vendorRepository
+                .findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining(content,content, content);
+//        return Stream.of(vendorRepository.findByVendorContactContaining(content),
+//                        vendorRepository.findByVendorNameContaining(content),
+//                        vendorRepository.findByVendorTelephoneContaining(content))
+//                    .flatMap(Collection::stream)
+//                    .distinct()
+//                    .collect(Collectors.toList());
 
-    @PostMapping("/vendors1")
-    public Vendor addVendor(@RequestBody Vendor theVendor
-//                            BindingResult bindingResult
-    ){
 
-//        if(bindingResult.hasErrors()){
-//            System.out.println(bindingResult.getAllErrors());
-//        }
+    }
+
+
+    @PostMapping()
+    public Vendor addVendor(@RequestBody Vendor theVendor){
 
         theVendor.setVendorId(0);
 
@@ -54,7 +65,7 @@ public class VendorController {
         return theVendor;
     }
 
-    @PutMapping("/vendors1/{vendorId}")
+    @PutMapping("/{vendorId}")
     public Vendor updateVendor(@PathVariable int vendorId,
             @RequestBody Vendor theVendor){
 
@@ -64,7 +75,7 @@ public class VendorController {
         return theVendor;
     }
 
-    @DeleteMapping("/vendors1/{vendorId}")
+    @DeleteMapping("/{vendorId}")
     public String deleteVendor(@PathVariable int vendorId){
         Optional<Vendor> result = this.vendorRepository.findById(vendorId);
 

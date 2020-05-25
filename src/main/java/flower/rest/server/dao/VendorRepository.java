@@ -14,6 +14,14 @@ public interface VendorRepository extends JpaRepository<Vendor, Integer> {
 
     List<Vendor> findByVendorNameContaining(@RequestParam("name") String name);
 
-    List<Vendor> findByVendorContactContaining(@RequestParam("name") String contact);
+    List<Vendor> findByVendorContactContaining(@RequestParam("contact") String contact);
 
+    List<Vendor> findByVendorTelephoneContaining(@RequestParam("telephone") String telephone);
+
+
+//    List<Vendor> findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining((@RequestParam("content") String contact);
+
+//    List<Vendor> findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining(@RequestParam("content") String contact);
+
+    List<Vendor> findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining(String name, String contact, String telephone);
 }
