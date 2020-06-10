@@ -3,6 +3,9 @@ package flower.rest.server.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.internal.constraintvalidators.bv.time.future.FutureValidatorForLocalDateTime;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,6 +22,8 @@ public class StockIn {
     @Column(name = "stock_in_id")
     private int stockInId;
 
+//    @CreationTimestamp
+    @UpdateTimestamp
     @Column(name = "stock_in_time")
     private LocalDateTime stockInTime;
 
@@ -27,6 +32,9 @@ public class StockIn {
 
     @Column(name = "stock_in_price")
     private double stockInPrice;
+
+    @Column(name = "stock_in_total_price")
+    private double stockInTotalPrice;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH

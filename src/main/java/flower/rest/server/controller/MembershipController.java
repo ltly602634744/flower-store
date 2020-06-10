@@ -41,8 +41,9 @@ public class MembershipController {
 
     @GetMapping("/fuzzySearch")
     public List<Membership> fuzzySearch(@RequestParam("content") String content){
+        String decodedContent = ControllerTools.decodeSearchContent(content);
         return membershipRepository
-                .findByMembershipNameContainingOrMembershipSexContainingOrMembershipTelephoneContaining(content, content, content);
+                .findByMembershipNameContainingOrMembershipSexContainingOrMembershipTelephoneContaining(decodedContent, decodedContent, decodedContent);
     }
 
     @PostMapping()

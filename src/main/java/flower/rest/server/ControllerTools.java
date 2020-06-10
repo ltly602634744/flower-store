@@ -4,7 +4,9 @@ import flower.rest.server.entity.Anniversary;
 import flower.rest.server.entity.Vendor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.ParameterizedType;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +20,7 @@ public class ControllerTools {
             repo.deleteById(valueId);
             return "Deleted " + result.getClass().getSimpleName() + " : " + result;
         }else{
-            throw new RuntimeException("Id" + valueId + " is not exist");
+            throw new RuntimeException("Id " + valueId + " is not exist");
         }
     }
 
@@ -40,5 +42,16 @@ public class ControllerTools {
 
     public static <V> List<V> findAll(JpaRepository<V, Integer> repo){
         return repo.findAll();
+    }
+
+    public static String decodeSearchContent(String content){
+        String decodedContent = null;
+        try {
+            decodedContent = URLDecoder.decode(content, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }finally {
+            return decodedContent;
+        }
     }
 }

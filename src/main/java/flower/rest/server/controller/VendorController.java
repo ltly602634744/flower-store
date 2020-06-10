@@ -1,17 +1,14 @@
 package flower.rest.server.controller;
 
+import flower.rest.server.ControllerTools;
+import flower.rest.server.dao.StockInRepository;
 import flower.rest.server.dao.VendorRepository;
 import flower.rest.server.entity.Vendor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin("*")
@@ -21,7 +18,7 @@ public class VendorController {
     private VendorRepository vendorRepository;
 
     @Autowired
-    public VendorController(VendorRepository vendorRepository){
+    public VendorController(VendorRepository vendorRepository) {
         this.vendorRepository = vendorRepository;
     }
 
@@ -41,9 +38,13 @@ public class VendorController {
     }
 
     @GetMapping("/fuzzySearch")
-    public List<Vendor> fuzzySearch(@RequestParam("content") String content){
+    public List<Vendor> fuzzySearch(@RequestParam("content") String content) {
+
+        String decodedContent = ControllerTools.decodeSearchContent(content);
         return vendorRepository
-                .findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining(content,content, content);
+                .findByVendorNameContainingOrVendorContactContainingOrVendorTelephoneContaining(decodedContent,decodedContent, decodedContent);
+
+
 //        return Stream.of(vendorRepository.findByVendorContactContaining(content),
 //                        vendorRepository.findByVendorNameContaining(content),
 //                        vendorRepository.findByVendorTelephoneContaining(content))

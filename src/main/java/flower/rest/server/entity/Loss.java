@@ -1,8 +1,10 @@
 package flower.rest.server.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -15,7 +17,11 @@ public class Loss {
     @Column(name = "loss_id")
     private int lossId;
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Column(name = "loss_time")
+    @CreationTimestamp
+    private LocalDateTime lossTime;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "loss_employee_id")
     private Employee lossEmployee;
 

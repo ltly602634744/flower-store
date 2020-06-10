@@ -21,4 +21,9 @@ public class Stock {
             {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "stock_item_id")
     private Item item;
+
+    public Stock addQuantity(int quantity){
+        this.stockQuantity += quantity;
+        return this;
+    }
 }

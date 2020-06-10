@@ -1,6 +1,7 @@
 package flower.rest.server.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -20,7 +21,7 @@ public class Price {
     @JoinColumn(name = "price_employee_id")
     private Employee employee;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "price_item_id")
     private Item priceItem;
 
@@ -37,12 +38,8 @@ public class Price {
     @Column(name = "price_membership")
     private double priceMembership;
 
-    @Column(name = "price_final")
-    private double priceFinal;
-
-
-
-
 
 
 }
+
+

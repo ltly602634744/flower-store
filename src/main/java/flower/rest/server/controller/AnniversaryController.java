@@ -36,8 +36,9 @@ public class AnniversaryController {
 
     @GetMapping("/fuzzySearch")
     public List<Anniversary> fuzzySearch(@RequestParam("content") String content){
+        String decodedContent = ControllerTools.decodeSearchContent(content);
         return anniversaryRepository
-                .findByAnniversaryNameContainingOrAnniversaryPreferContaining(content, content);
+                .findByAnniversaryNameContainingOrAnniversaryPreferContaining(decodedContent, decodedContent);
     }
 
 

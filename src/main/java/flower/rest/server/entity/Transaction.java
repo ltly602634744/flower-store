@@ -1,6 +1,7 @@
 package flower.rest.server.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.lang.reflect.Member;
@@ -18,6 +19,7 @@ public class Transaction {
     private int transactionId;
 
     @Column(name = "transaction_time")
+    @CreationTimestamp
     private LocalDateTime transactionTime;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
