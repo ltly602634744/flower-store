@@ -1,11 +1,8 @@
 package flower.rest.server;
 
-import flower.rest.server.entity.Anniversary;
-import flower.rest.server.entity.Vendor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.ParameterizedType;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +10,7 @@ import java.util.Optional;
 public class ControllerTools {
 
     public static <V> String deleteById(JpaRepository<V, Integer> repo, int valueId){
+
         Optional<V> resultOpt = repo.findById(valueId);
 
         if(resultOpt.isPresent()){
@@ -30,7 +28,11 @@ public class ControllerTools {
     }
 
     public static <V> V findById(JpaRepository<V, Integer> repo, int valueId){
+
+//        return repo.findById(valueId)
+//                .orElseThrow(()->new RuntimeException("The " + Class.));
         Optional<V> resultOpt = repo.findById(valueId);
+//        Optional
 
         if(resultOpt.isPresent()){
             V result = resultOpt.get();
@@ -55,3 +57,4 @@ public class ControllerTools {
         }
     }
 }
+

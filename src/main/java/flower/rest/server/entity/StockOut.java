@@ -1,5 +1,6 @@
 package flower.rest.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -8,6 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table( name = "STOCK_OUT")
+//@JsonIgnoreProperties(value={"stockOutLoss"})
 @Data
 public class StockOut {
 
@@ -20,8 +22,8 @@ public class StockOut {
     private int stockOutQuantity;
 
 //    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-//    @JoinColumn(name = "stock_out_employee_id")
-//    private Employee stockOutEmployee;
+//    @JoinColumn(name = "stock_out_loss_id")
+//    private Loss stockOutLoss;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "stock_out_item_id")
@@ -29,4 +31,8 @@ public class StockOut {
 
     @Column(name = "stock_out_final_price")
     private double priceFinal;
+
+//    public StockOut(){}
+
+
 }

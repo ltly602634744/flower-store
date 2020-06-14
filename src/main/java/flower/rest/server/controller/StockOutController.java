@@ -3,16 +3,15 @@ package flower.rest.server.controller;
 import flower.rest.server.dao.LossRepository;
 import flower.rest.server.dao.StockOutRepository;
 import flower.rest.server.dao.TransactionRepository;
-import flower.rest.server.dto.StockOutDTO;
-import flower.rest.server.entity.*;
-import lombok.Data;
+import flower.rest.server.dto.StockOutDisplay;
+import flower.rest.server.entity.Loss;
+import flower.rest.server.entity.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,26 +32,26 @@ public class StockOutController {
         this.transactionRepository = transactionRepository;
     }
 
-    private Stream<StockOutDTO> transferFromLoss(Loss theLoss){
+    private Stream<StockOutDisplay> transferFromLoss(Loss theLoss){
         return
                 theLoss.getLossStockOuts().stream()
-                        .map((s)->new StockOutDTO(theLoss.getLossTime(), theLoss.getLossEmployee(), s.getStockOutItem(), s.getStockOutQuantity(), "loss"));
+                        .map((s)->new StockOutDisplay(theLoss.getLossTime(), theLoss.getLossEmployee(), s.getStockOutItem(), s.getStockOutQuantity(), s.getPriceFinal(),"loss"));
     }
 
-    private Stream<StockOutDTO> transferFromTransaction(Transaction theTransaction){
+    private Stream<StockOutDisplay> transferFromTransaction(Transaction theTransaction){
         return
                 theTransaction.getTransactionStockOuts().stream()
-                        .map((s)->new StockOutDTO(theTransaction.getTransactionTime(), theTransaction.getTransactionEmployee(), s.getStockOutItem(), s.getStockOutQuantity(), "transaction"));
+                        .map((s)->new StockOutDisplay(theTransaction.getTransactionTime(), theTransaction.getTransactionEmployee(), s.getStockOutItem(), s.getStockOutQuantity(), s.getPriceFinal(),"transaction"));
 
     }
 
     @GetMapping
-    public List<StockOutDTO> findAllStockOuts(){
+    public List<StockOutDisplay> findAllStockOuts(){
 
         return
         Stream.concat(lossRepository.findAll().stream().flatMap((loss)->transferFromLoss(loss)),
                 transactionRepository.findAll().stream().flatMap((transaction)->transferFromTransaction(transaction)))
-                .sorted((x, y)-> x.getStockOutTime().compareTo(y.getStockOutTime()))
+                .sorted((x, y)-> -(x.getStockOutTime().compareTo(y.getStockOutTime())))
                 .collect(Collectors.toList());
 
     }

@@ -69,11 +69,12 @@ public class StockInController {
         theStockIn.setStockInVendor(stockInVendor);
         theStockIn.setStockInTotalPrice(stockInTotalPrice);
 
-        Stock theStock = null;
-        theStock = stockRepository.findById(theStockInDTO.getStockInItemId())
-                .orElseThrow(()->new RuntimeException("Item id " + theStockInDTO.getStockInItemId() + " is not exist"));
+        Stock theStock = stockRepository.findById(theStockInDTO.getStockInItemId())
+//                .orElseThrow(()->new RuntimeException("Item id " + theStockInDTO.getStockInItemId() + " is not exist"));
+                    .orElseGet(Stock::new);
 
         if(theStockIn.getStockInId() == 0){
+            theStock.setItem(stockInItem);
             stockRepository.save(theStock.addQuantity(stockInQuantity));
         }else{
             stockRepository.save(theStock.addQuantity(stockInQuantity - stockInRepository.findById(theStockIn.getStockInId()).get().getStockInQuantity()));

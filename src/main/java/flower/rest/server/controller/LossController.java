@@ -1,21 +1,14 @@
 package flower.rest.server.controller;
 
 import flower.rest.server.ControllerTools;
-import flower.rest.server.ErrorResponse.ErrorResponse;
-import flower.rest.server.dao.*;
+import flower.rest.server.dao.LossRepository;
 import flower.rest.server.dto.LossDTO;
-import flower.rest.server.entity.Employee;
 import flower.rest.server.entity.Loss;
-import flower.rest.server.entity.Stock;
 import flower.rest.server.entity.StockOut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,10 +22,6 @@ public class LossController extends StockOutsBaseController{
     @Autowired
     public LossController(LossRepository lossRepository) {
         this.lossRepository = lossRepository;
-//        this.stockOutRepository = stockOutRepository;
-//        this.stockRepository = stockRepository;
-//        this.employeeRepository = employeeRepository;
-//        this.itemRepository = itemRepository;
     }
 
 
@@ -48,55 +37,10 @@ public class LossController extends StockOutsBaseController{
 
     private Loss lossDTO2Loss(LossDTO theLossDTO){
 
-        Loss resultLoss = null;
-        Employee theEmployee = null;
-        theEmployee = employeeRepository.findById(theLossDTO.getEmployeeId())
-                .orElseThrow(()->new RuntimeException("Cannot find the employee " + theLossDTO.getEmployeeId()));
+        List<StockOut> stockOuts = super.createStockOutsList(theLossDTO);
 
-        List<Integer> itemIds = theLossDTO.getLossItemIds();
-        List<Integer> itemQuantities = theLossDTO.getLossItemQuantities();
-
-        // test whether the size of lists is same
-        if(itemIds.size() != itemQuantities.size()){
-            throw new RuntimeException("The sizes of two lists are not equal!");
-        }
-
-        //create entry stream
-        Map<Integer, Integer> idQuantityMap = itemIds.stream()
-                .collect(Collectors.toMap(id -> id, id -> itemQuantities.get(itemIds.indexOf(id))));
-
-        // test whether the quantity is over limit
-        for (Map.Entry<Integer, Integer> tempEntry : idQuantityMap.entrySet()){
-            int id = tempEntry.getKey();
-            int quantity = tempEntry.getValue();
-            itemRepository.findById(id).orElseThrow(()->new RuntimeException("Item id " + id + " is not exist!"));
-            if (stockRepository.findByItemId(id).getStockQuantity() < quantity){
-                throw new RuntimeException( "stock quantity of item " + id + " is not enough!");
-            }
-        }
-
-        //create StockOut record and change the stock quantities
-        List<StockOut> stockOuts = idQuantityMap.entrySet().stream()
-                                    .map((entry) -> {
-                                        int id = entry.getKey();
-                                        int quantity = entry.getValue();
-
-                                        StockOut tempStockOut = new StockOut();
-                                        tempStockOut.setPriceFinal(0.0);
-                                        tempStockOut.setStockOutQuantity(quantity);
-                                        tempStockOut.setStockOutItem(itemRepository.findById(id).get());
-
-                                        Stock tempStock = stockRepository.findByItemId(id);
-                                        tempStock.addQuantity(-quantity);
-
-                                        stockRepository.save(tempStock);
-                                        stockOutRepository.save(tempStockOut);
-                                        return tempStockOut;
-                                    })
-                                    .collect(Collectors.toList());
-
-        resultLoss = new Loss();
-        resultLoss.setLossEmployee(theEmployee);
+        Loss resultLoss = new Loss();
+        resultLoss.setLossEmployee(super.getEmployee(theLossDTO));
         resultLoss.setLossStockOuts(stockOuts);
 
         return resultLoss;
@@ -104,36 +48,52 @@ public class LossController extends StockOutsBaseController{
 
     @PostMapping
     public Loss createLoss(@RequestBody LossDTO theLossDTO){
-        Loss theLoss = null;
-        theLoss = lossDTO2Loss(theLossDTO);
+        Loss theLoss  = this.lossDTO2Loss(theLossDTO);
 
+        lossRepository.save(theLoss);
+
+        return theLoss;
+    }
+
+    @PutMapping("/{lossId}")
+    public Loss updateLoss(@RequestBody LossDTO theLossDTO, @PathVariable int lossId){
+
+        Loss originLoss = lossRepository.findById(lossId)
+                .orElseThrow(()-> new RuntimeException("The loss is not exist "));
+
+        //record the originStockOutIds
+        List<Integer> originStockOutIds = originLoss.getLossStockOuts().stream()
+                .map(s -> s.getStockOutId())
+                .collect(Collectors.toList());
+
+        //rollBackStock
+        super.rollBackStock(originLoss.getLossStockOuts());
+
+        Loss theLoss = lossDTO2Loss(theLossDTO);
+        theLoss.setLossId(lossId);
+
+        //save the changes
         if (theLoss != null) {
             lossRepository.save(theLoss);
         }else{
             throw new RuntimeException("The loss cannot be null! ");
         }
+        //delete the useless stock outs
+        originStockOutIds.removeAll(theLossDTO.getStockOutIds());
+        originStockOutIds.stream().forEach(id->super.stockOutRepository.deleteById(id));
+
 
         return theLoss;
     }
 
-//    @PutMapping("/{lossId}")
-//    public Loss updateLoss(@RequestBody LossDTO theLossDTO, @PathVariable int lossId){
-//
-//        Loss originLoss = lossRepository.findById(lossId)
-//                .orElseThrow(()-> new RuntimeException("The loss is not exist "));
-//
-//        theLossDTO.set
-//        Loss theLoss = null;
-////        theLoss = lossDTO2Loss(theLossDTO);
-//
-//        if (theLoss != null) {
-//            lossRepository.save(theLoss);
-//        }else{
-//            throw new RuntimeException("The loss cannot be null! ");
-//        }
-//
-//        return theLoss;
-//    }
+    @DeleteMapping("/{lossId}")
+    public String deleteLossById(@PathVariable int lossId){
+        Loss theLoss = lossRepository.findById(lossId)
+                .orElseThrow(()-> new RuntimeException("The loss is not exist "));
+        super.rollBackStock(theLoss.getLossStockOuts());
+        lossRepository.deleteById(lossId);
+        return "Deleted loss " + lossId;
+    }
 
 
 

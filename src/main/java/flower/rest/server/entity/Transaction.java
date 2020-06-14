@@ -1,10 +1,9 @@
 package flower.rest.server.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.lang.reflect.Member;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class Transaction {
     private int transactionId;
 
     @Column(name = "transaction_time")
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime transactionTime;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -35,7 +34,7 @@ public class Transaction {
     private Membership transactionMembership;
 
     @Column(name = "transaction_amount")
-    private LocalDateTime transactionAmount;
+    private double transactionAmount;
 
 
 }

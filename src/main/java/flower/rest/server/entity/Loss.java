@@ -2,6 +2,7 @@ package flower.rest.server.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ public class Loss {
     private int lossId;
 
     @Column(name = "loss_time")
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime lossTime;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
