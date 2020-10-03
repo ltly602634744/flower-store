@@ -12,7 +12,7 @@ import java.util.List;
 @CrossOrigin("*")
 public interface AnniversaryRepository extends JpaRepository<Anniversary, Integer> {
 
-    List<Anniversary> findByAnniversaryMembershipId(@RequestParam("id") Integer membershipId);
+    List<Anniversary> findByAnniversaryMembershipId(Integer membershipId);
 
     List<Anniversary> findByAnniversaryNameContainingOrAnniversaryPreferContaining(String name, String prefer);
 }

@@ -88,7 +88,7 @@ public class MembershipController {
 
     @PutMapping("/{membershipId}/anniversaries/{anniversaryId}")
     public Anniversary updateAnniversaryByMembershipId(@PathVariable int membershipId,
-                  @PathVariable int anniversaryId, @RequestBody Anniversary anniversary){
+                                                       @PathVariable int anniversaryId, @RequestBody Anniversary anniversary){
 
         anniversary.setAnniversaryId(anniversaryId);
         anniversary.setAnniversaryMembershipId(membershipId);

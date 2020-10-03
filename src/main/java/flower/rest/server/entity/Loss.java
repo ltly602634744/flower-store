@@ -26,7 +26,7 @@ public class Loss {
     @JoinColumn(name = "loss_employee_id")
     private Employee lossEmployee;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "stock_out_loss_id")
     private List<StockOut> lossStockOuts;
 }

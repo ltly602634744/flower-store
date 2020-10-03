@@ -3,6 +3,7 @@ package flower.rest.server.dao;
 import flower.rest.server.entity.Membership;
 import flower.rest.server.entity.Vendor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,6 +17,7 @@ public interface MembershipRepository extends JpaRepository<Membership, Integer>
 //
 //    List<Vendor> findByVendorContactContaining(@RequestParam("name") String contact);
 
+    @RestResource(rel="fuzzySearch", path = "fuzzySearch")
     List<Membership> findByMembershipNameContainingOrMembershipSexContainingOrMembershipTelephoneContaining(String name, String sex, String telephone);
 
     List<Membership> findByMembershipPointIsGreaterThan(@RequestParam("threshold") int threshold);

@@ -18,10 +18,10 @@ public class Employee {
     private String employeeName;
 
     @Column(name = "employee_telephone")
-    private int employeeTelephone;
+    private String employeeTelephone;
 
     @Column(name = "employee_status")
-    private boolean employeeStatus;
+    private String employeeStatus;
 
 
 }

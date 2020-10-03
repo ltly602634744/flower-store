@@ -5,6 +5,7 @@ import flower.rest.server.dao.EmployeeRepository;
 import flower.rest.server.dao.ItemRepository;
 import flower.rest.server.dao.StockOutRepository;
 import flower.rest.server.dao.StockRepository;
+import flower.rest.server.dto.StockOutDTO;
 import flower.rest.server.dto.StockOutsDTO;
 import flower.rest.server.entity.*;
 import lombok.Data;
@@ -64,6 +65,36 @@ public class StockOutsBaseController {
             }
         }
         return true;
+    }
+
+    protected StockOut createStockOut(StockOutDTO theStockOutDTO){
+
+        int stockOutId = theStockOutDTO.getStockOutId();
+        String itemName = theStockOutDTO.getItemName();
+        int itemQuantity = theStockOutDTO.getItemQuantity();
+        int finalUnitPrice = theStockOutDTO.getFinalUnitPrice();
+
+        // test whether the quantity is over limit, the item is exist
+        Item item = itemRepository.findByItemName(itemName);
+//        Item item = itemRepository.findById(itemId).orElseThrow(()->new RuntimeException("Item id " + itemId + " is not exist!"));
+        if (stockRepository.findByItemId(item.getItemId()).getStockQuantity() < itemQuantity){
+            throw new RuntimeException( "stock quantity of item " + item.getItemId() + " is not enough!");
+        }
+
+        //create StockOut record and change the stock quantities
+        StockOut tempStockOut = new StockOut();
+        tempStockOut.setStockOutId(stockOutId);
+        tempStockOut.setPriceFinal(finalUnitPrice);
+        tempStockOut.setStockOutQuantity(itemQuantity);
+        tempStockOut.setStockOutItem(item);
+
+        Stock tempStock = stockRepository.findByItemId(item.getItemId());
+        tempStock.addQuantity(-itemQuantity);
+        //save stock and stockOut
+        stockRepository.save(tempStock);
+        stockOutRepository.save(tempStockOut);
+
+        return tempStockOut;
     }
 
 
@@ -167,6 +198,13 @@ public class StockOutsBaseController {
 
         theItemStock.addQuantity(theStockOut.getStockOutQuantity());
         stockOutRepository.deleteById(stockOutId);
+    }
+
+    protected void rollBackOneStock (StockOut stockOut){
+        int itemId = stockOut.getStockOutItem().getItemId();
+        Stock tempStock = stockRepository.findByItemId(itemId);
+        tempStock.addQuantity(stockOut.getStockOutQuantity());
+        stockRepository.save(tempStock);
     }
 
     protected void rollBackStock(List<StockOut> stockOuts){

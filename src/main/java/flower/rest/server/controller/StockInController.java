@@ -4,14 +4,18 @@ import flower.rest.server.ControllerTools;
 import flower.rest.server.ErrorResponse.ErrorResponse;
 import flower.rest.server.dao.*;
 import flower.rest.server.dto.StockInDTO;
+import flower.rest.server.dto.change.StockInDisplay;
 import flower.rest.server.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.NonUniqueResultException;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -34,17 +38,51 @@ public class StockInController {
         this.itemRepository = itemRepository;
     }
 
+//    @GetMapping
+//    public List<StockIn> findAll(){
+//        return ControllerTools.findAll(stockInRepository);
+//    }
+
+//    @GetMapping("/{stockInId}")
+//    public StockIn findStockInById(@PathVariable int stockInId){
+//        return ControllerTools.findById(stockInRepository, stockInId);
+//    }
+
+
+//    @GetMapping("/fuzzySearch")
+//    public List<StockIn> fuzzySearch(@RequestParam("content") String content){
+//        String decodedContent = ControllerTools.decodeSearchContent(content);
+//        return stockInRepository.findByNames(content);
+//    }
     @GetMapping
-    public List<StockIn> findAll(){
-        return ControllerTools.findAll(stockInRepository);
+    public List<StockInDisplay> findAll(){
+        return ControllerTools.findAll(stockInRepository).stream()
+                .map(x->{
+                    StockInDisplay sid = new StockInDisplay();
+                    return sid.stockIn2StockInDisplay(x);
+                }).collect(Collectors.toList());
     }
 
     @GetMapping("/{stockInId}")
-    public StockIn findStockInById(@PathVariable int stockInId){
-        return ControllerTools.findById(stockInRepository, stockInId);
+    public StockInDisplay findStockInById(@PathVariable int stockInId){
+        StockInDisplay sid = new StockInDisplay();
+        return sid.stockIn2StockInDisplay(ControllerTools.findById(stockInRepository, stockInId));
     }
 
-    private StockIn dto2StockIn(StockIn theStockIn, StockInDTO theStockInDTO) {
+
+    @GetMapping("/fuzzySearch")
+    public List<StockInDisplay> fuzzySearch(@RequestParam("content") String content){
+        String decodedContent = ControllerTools.decodeSearchContent(content);
+        return stockInRepository.findByNames(content).stream()
+                .map(x->{
+                    StockInDisplay sid = new StockInDisplay();
+                    return sid.stockIn2StockInDisplay(x);
+                }).collect(Collectors.toList());
+    }
+
+
+
+    private StockIn dto2StockIn(StockIn theStockIn, StockInDTO theStockInDTO) throws IncorrectResultSizeDataAccessException {
 
         double stockInPrice = theStockInDTO.getStockInPrice();
         int stockInQuantity = theStockInDTO.getStockInQuantity();
@@ -53,14 +91,14 @@ public class StockInController {
         Item stockInItem = null;
         Vendor stockInVendor = null;
 
-        stockInEmployee = employeeRepository.findById(theStockInDTO.getStockInEmployeeId())
-                .orElseThrow( ()-> new RuntimeException("Employee " + theStockInDTO.getStockInEmployeeId() + " is not exist"));
+        stockInEmployee = employeeRepository.findById(theStockInDTO.getEmployeeId())
+                .orElseThrow( ()-> new RuntimeException("Employee " + theStockInDTO.getEmployeeId() + " is not exist"));
 
-        stockInItem = itemRepository.findById(theStockInDTO.getStockInItemId())
-                .orElseThrow( ()-> new RuntimeException("Item " + theStockInDTO.getStockInItemId() + " is not exist"));
+        stockInItem = itemRepository.findByItemName(theStockInDTO.getStockInItemName());
+//                .orElseThrow( ()-> new RuntimeException("Item " + theStockInDTO.getStockInItemName() + " is not exist"));
 
-        stockInVendor = vendorRepository.findById(theStockInDTO.getStockInVendorId())
-                .orElseThrow( ()-> new RuntimeException("Vendor " + theStockInDTO.getStockInVendorId() + " is not exist"));
+        stockInVendor = vendorRepository.findByVendorName(theStockInDTO.getStockInVendorName());
+//                .orElseThrow( ()-> new RuntimeException("Vendor " + theStockInDTO.getStockInVendorName() + " is not exist"));
 
         theStockIn.setStockInEmployee(stockInEmployee);
         theStockIn.setStockInItem(stockInItem);
@@ -69,9 +107,7 @@ public class StockInController {
         theStockIn.setStockInVendor(stockInVendor);
         theStockIn.setStockInTotalPrice(stockInTotalPrice);
 
-        Stock theStock = stockRepository.findById(theStockInDTO.getStockInItemId())
-//                .orElseThrow(()->new RuntimeException("Item id " + theStockInDTO.getStockInItemId() + " is not exist"));
-                    .orElseGet(Stock::new);
+        Stock theStock = stockRepository.findByItemId(stockInItem.getItemId());
 
         if(theStockIn.getStockInId() == 0){
             theStock.setItem(stockInItem);
@@ -81,6 +117,7 @@ public class StockInController {
         }
 
         stockInRepository.save(theStockIn);
+//        System.out.println(theStockIn);
 
         return theStockIn ;
     }
@@ -124,7 +161,18 @@ public class StockInController {
 
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+    public ResponseEntity<ErrorResponse> NonUniqueResultException(IncorrectResultSizeDataAccessException e){
+        ErrorResponse error = new ErrorResponse();
+
+        error.setStatus(HttpStatus.EXPECTATION_FAILED.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(Instant.now().toEpochMilli());
+
+        return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleException(RuntimeException e){
         ErrorResponse error = new ErrorResponse();
 
@@ -134,6 +182,10 @@ public class StockInController {
 
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+
+
+
 
 
 }

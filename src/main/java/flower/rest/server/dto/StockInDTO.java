@@ -8,9 +8,9 @@ public class StockInDTO{
 
     private double stockInPrice;
 
-    private int stockInEmployeeId;
+    private int employeeId;
 
-    private int stockInItemId;
+    private String stockInItemName;
 
-    private int stockInVendorId;
+    private String stockInVendorName;
 }

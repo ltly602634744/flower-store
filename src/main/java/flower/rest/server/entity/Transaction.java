@@ -25,7 +25,7 @@ public class Transaction {
     @JoinColumn(name = "transaction_employee_id")
     private Employee transactionEmployee;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "stock_out_transaction_id")
     private List<StockOut> transactionStockOuts;
 

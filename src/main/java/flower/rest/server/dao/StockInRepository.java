@@ -13,4 +13,9 @@ import java.util.List;
 public interface StockInRepository extends JpaRepository<StockIn, Integer> {
 
 //    public List<StockIn> findByStock_in_vendor(@RequestParam Integer id);
+    @Query(value = "select s from StockIn s" +
+                    " where s.stockInEmployee.employeeName LIKE %:name%" +
+                    " Or " + "s.stockInItem.itemName LIKE %:name%" +
+                    " Or " + "s.stockInVendor.vendorName LIKE %:name%")
+    List<StockIn> findByNames(String name);
 }

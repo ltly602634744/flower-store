@@ -1,12 +1,16 @@
 package flower.rest.server.controller;
 
 import flower.rest.server.ControllerTools;
+import flower.rest.server.ErrorResponse.ErrorResponse;
 import flower.rest.server.dao.StockInRepository;
 import flower.rest.server.dao.VendorRepository;
 import flower.rest.server.entity.Vendor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +65,10 @@ public class VendorController {
 
         theVendor.setVendorId(0);
 
+        if (vendorRepository.findByVendorName(theVendor.getVendorName()) !=null){
+            throw new RuntimeException("花店已存在");
+        }
+
         this.vendorRepository.save(theVendor);
 
         return theVendor;
@@ -87,5 +95,16 @@ public class VendorController {
             throw new RuntimeException("Vendor is not exist");
         }
 
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException e){
+        ErrorResponse error = new ErrorResponse();
+
+        error.setStatus(HttpStatus.EXPECTATION_FAILED.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(Instant.now().toEpochMilli());
+
+        return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
     }
 }

@@ -1,6 +1,7 @@
 package flower.rest.server;
 
 import flower.rest.server.dao.MembershipRepository;
+import flower.rest.server.dao.VendorRepository;
 import flower.rest.server.entity.Anniversary;
 import flower.rest.server.entity.Membership;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,18 @@ class ServerApplicationTests {
 
     @Autowired
     private MembershipRepository membershipRepository;
+    @Autowired
+    private VendorRepository vendorRepository;
 
     @Test
     void contextLoads() {
 
 
+    }
+
+    @Test
+    void vendorRepositoryTest(){
+        System.out.println(vendorRepository.findByVendorName("花店"));
     }
 
 //    @Test

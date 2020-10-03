@@ -3,7 +3,7 @@ package flower.rest.server.dto;
 import lombok.Data;
 
 @Data
-public class TransactionDTO extends StockOutsDTO{
+public class TransactionDTO extends StockOutDTO{
     private int transactionId;
 
     private int membershipId;
